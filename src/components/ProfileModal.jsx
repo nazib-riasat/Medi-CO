@@ -11,6 +11,7 @@ export default function ProfileModal({ manager, onClose, onSaved, onSignOut }) {
   const [showNid, setShowNid] = useState(false)
   const [nidPassword, setNidPassword] = useState('')
   const [showNidPrompt, setShowNidPrompt] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,18 +39,36 @@ export default function ProfileModal({ manager, onClose, onSaved, onSignOut }) {
 
   const handleChangePassword = async () => {
     setError(''); setSuccess('')
+    if (!currentPassword) {
+      setError('Please enter your current password'); return
+    }
     if (!newPassword || newPassword !== confirmPassword) {
-      setError('Passwords do not match'); return
+      setError('New passwords do not match'); return
     }
     if (newPassword.length < 6) {
       setError('Password must be at least 6 characters'); return
     }
     setLoading(true)
+
+    // Verify current password first
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: manager.email,
+      password: currentPassword
+    })
+    if (authError) {
+      setError('Current password is incorrect')
+      setLoading(false)
+      return
+    }
+
+    // Update to new password
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setLoading(false)
     if (error) { setError(error.message); return }
     setSuccess('Password changed successfully!')
-    setNewPassword(''); setConfirmPassword('')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
   }
 
   const handleRevealNid = async () => {
@@ -241,6 +260,17 @@ export default function ProfileModal({ manager, onClose, onSaved, onSignOut }) {
           <h4 style={{ fontSize: 15, fontWeight: 600, color: '#333', marginBottom: 14 }}>
             Change Password
           </h4>
+
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Current Password</label>
+            <input
+              type="password"
+              placeholder="Enter current password"
+              value={currentPassword}
+              onChange={e => setCurrentPassword(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
 
           <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>New Password</label>

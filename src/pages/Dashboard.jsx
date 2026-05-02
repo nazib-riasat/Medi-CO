@@ -6,6 +6,7 @@ import AddPatientModal from '../components/AddPatientModal'
 import AddMedicationModal from '../components/AddMedicationModal'
 import UploadRecordModal from '../components/UploadRecordModal'
 import ProfileModal from '../components/ProfileModal'
+import QRModal from '../components/QRModal'
 import Records from '../pages/Records'
 
 export default function Dashboard() {
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showRecords, setShowRecords] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [showQR, setShowQR] = useState(false)
   const [uploadLabel, setUploadLabel] = useState('')
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
@@ -146,8 +148,7 @@ export default function Dashboard() {
             src="/fevicon.png"
             alt="logo"
             style={{
-              width: 48, height: 48,
-              objectFit: 'contain',
+              width: 48, height: 48, objectFit: 'contain',
               filter: 'brightness(0) invert(1)'
             }}
           />
@@ -223,9 +224,11 @@ export default function Dashboard() {
                     onClick={() => { setActivePatient(p); setShowPatientDropdown(false) }}
                     style={{
                       width: '100%', padding: '12px 16px',
-                      background: activePatient?.patient_id === p.patient_id ? '#f0faf5' : 'white',
+                      background: activePatient?.patient_id === p.patient_id
+                        ? '#f0faf5' : 'white',
                       border: 'none', borderBottom: '1px solid #f0f0f0',
-                      cursor: 'pointer', textAlign: 'left', fontSize: 14, color: '#333'
+                      cursor: 'pointer', textAlign: 'left',
+                      fontSize: 14, color: '#333'
                     }}>
                     {p.full_name}
                   </button>
@@ -309,6 +312,7 @@ export default function Dashboard() {
                   if (!activePatient) { alert('Please select a patient first'); return }
                   if (uploadTypes.includes(label)) { setUploadLabel(label); setShowUploadModal(true) }
                   if (label === 'View Records') setShowRecords(true)
+                  if (label === 'Doctor QR') setShowQR(true)
                 }}
                 style={{
                   width: 120, height: 90,
@@ -508,6 +512,14 @@ export default function Dashboard() {
           recordLabel={uploadLabel}
           onClose={() => setShowUploadModal(false)}
           onSaved={() => setShowUploadModal(false)}
+        />
+      )}
+
+      {showQR && activePatient && manager && (
+        <QRModal
+          patient={activePatient}
+          manager={manager}
+          onClose={() => setShowQR(false)}
         />
       )}
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
-
 const FILTERS = ['All', 'lab_report', 'scan', 'prescription']
 
 const FILTER_LABELS = {
@@ -18,7 +17,7 @@ const TYPE_ICONS = {
   'other': '📁'
 }
 
-export default function Records({ activePatient, manager, onBack }) {
+export default function Records({ activePatient, onBack }) {
   const [records, setRecords] = useState([])
   const [filtered, setFiltered] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
@@ -85,7 +84,7 @@ export default function Records({ activePatient, manager, onBack }) {
     loadRecords()
   }
 
-  // File viewer
+  // File Viewer
   if (viewingFile) {
     return (
       <div style={{
@@ -182,18 +181,18 @@ export default function Records({ activePatient, manager, onBack }) {
         </span>
       </nav>
 
-      <div style={{ padding: 24, paddingBottom: 80 }}>
+      <div style={{ padding: 20, paddingBottom: 80 }}>
 
         {/* Search */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 14 }}>
           <input
             type="search"
             placeholder="Search by file name or notes..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              width: '100%', height: 44, borderRadius: 12,
-              padding: '0 20px', border: '1px solid #ddd',
+              width: '100%', height: 42, borderRadius: 12,
+              padding: '0 18px', border: '1px solid #ddd',
               fontSize: 14, outline: 'none',
               boxSizing: 'border-box', background: 'white'
             }}
@@ -201,13 +200,13 @@ export default function Records({ activePatient, manager, onBack }) {
         </div>
 
         {/* Filter Tabs */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
           {FILTERS.map(f => (
             <button
               key={f}
               onClick={() => setActiveFilter(f)}
               style={{
-                padding: '7px 16px', borderRadius: 20,
+                padding: '6px 14px', borderRadius: 20,
                 border: activeFilter === f
                   ? '2px solid #1D7C57' : '2px solid #e0e0e0',
                 background: activeFilter === f ? '#1D7C57' : 'white',
@@ -226,40 +225,40 @@ export default function Records({ activePatient, manager, onBack }) {
           </p>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 64, color: '#888' }}>
-            <p style={{ fontSize: 48, marginBottom: 12 }}>📂</p>
-            <p style={{ fontSize: 16, fontWeight: 500 }}>No records found</p>
-            <p style={{ fontSize: 13, marginTop: 8 }}>
+            <p style={{ fontSize: 40, marginBottom: 10 }}>📂</p>
+            <p style={{ fontSize: 15, fontWeight: 500 }}>No records found</p>
+            <p style={{ fontSize: 13, marginTop: 6 }}>
               {search ? 'Try a different search term' : 'Upload records from the dashboard'}
             </p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {filtered.map(record => (
               <div
                 key={record.record_id}
                 onClick={() => openFile(record)}
                 style={{
-                  background: 'white', borderRadius: 14,
-                  padding: '16px 20px',
+                  background: 'white', borderRadius: 12,
+                  padding: '12px 16px',
                   border: '1px solid #e8e8e8',
                   display: 'flex', alignItems: 'center',
-                  gap: 14, cursor: 'pointer',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  gap: 12, cursor: 'pointer',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                   transition: 'box-shadow 0.2s'
                 }}
                 onMouseEnter={e =>
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.09)'
+                  e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.08)'
                 }
                 onMouseLeave={e =>
-                  e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'
                 }>
 
                 {/* Icon */}
                 <div style={{
-                  width: 46, height: 46, borderRadius: 12,
+                  width: 40, height: 40, borderRadius: 10,
                   background: '#f0faf5', flexShrink: 0,
                   display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: 22
+                  justifyContent: 'center', fontSize: 20
                 }}>
                   {TYPE_ICONS[record.record_type] || '📁'}
                 </div>
@@ -267,8 +266,8 @@ export default function Records({ activePatient, manager, onBack }) {
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
-                    fontSize: 15, fontWeight: 600, color: '#2d2d2d',
-                    marginBottom: 3, overflow: 'hidden',
+                    fontSize: 14, fontWeight: 600, color: '#2d2d2d',
+                    marginBottom: 2, overflow: 'hidden',
                     textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                   }}>
                     {record.title}
@@ -282,9 +281,9 @@ export default function Records({ activePatient, manager, onBack }) {
                   </p>
                 </div>
 
-                {/* Right side */}
+                {/* Right */}
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <p style={{ fontSize: 11, color: '#bbb', marginBottom: 6 }}>
+                  <p style={{ fontSize: 11, color: '#bbb', marginBottom: 4 }}>
                     {record.file_size_bytes
                       ? `${(record.file_size_bytes / 1024).toFixed(0)} KB`
                       : ''}
@@ -292,7 +291,7 @@ export default function Records({ activePatient, manager, onBack }) {
                   <button
                     onClick={e => { e.stopPropagation(); deleteRecord(record) }}
                     style={{
-                      padding: '4px 10px', fontSize: 11,
+                      padding: '3px 8px', fontSize: 11,
                       background: '#fdecea', color: '#c62828',
                       border: '1px solid #c62828', borderRadius: 6,
                       cursor: 'pointer', fontWeight: 500
