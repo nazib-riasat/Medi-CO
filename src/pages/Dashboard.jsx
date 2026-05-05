@@ -7,6 +7,7 @@ import AddMedicationModal from '../components/AddMedicationModal'
 import UploadRecordModal from '../components/UploadRecordModal'
 import ProfileModal from '../components/ProfileModal'
 import QRModal from '../components/QRModal'
+import ChatBot from '../components/ChatBot'
 import Records from '../pages/Records'
 
 export default function Dashboard() {
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [showRecords, setShowRecords] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  const [openChat, setOpenChat] = useState(false)
   const [uploadLabel, setUploadLabel] = useState('')
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
@@ -97,7 +99,7 @@ export default function Dashboard() {
     { icon: '💊', label: 'Upload Prescription' },
     { icon: '📋', label: 'View Records' },
     { icon: '📱', label: 'Doctor QR' },
-    { icon: '🛒', label: 'Order Medicine' },
+    // { icon: '🤖', label: 'AI Assistant' },
   ]
 
   const uploadTypes = ['Upload Report', 'Upload Scan', 'Upload Prescription']
@@ -309,6 +311,10 @@ export default function Dashboard() {
               <button
                 key={label}
                 onClick={() => {
+                  if (label === 'AI Assistant') {
+                    setOpenChat(true)
+                    return
+                  }
                   if (!activePatient) { alert('Please select a patient first'); return }
                   if (uploadTypes.includes(label)) { setUploadLabel(label); setShowUploadModal(true) }
                   if (label === 'View Records') setShowRecords(true)
@@ -479,6 +485,9 @@ export default function Dashboard() {
       }}>
         Developed & Maintained by @Medi-Co
       </footer>
+
+      {/* ChatBot */}
+      <ChatBot triggerOpen={openChat} />
 
       {/* Modals */}
       {showProfile && manager && (
