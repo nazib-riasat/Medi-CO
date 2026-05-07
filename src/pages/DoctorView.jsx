@@ -30,6 +30,7 @@ export default function DoctorView() {
   const [viewingFile, setViewingFile] = useState(null)
   const [viewingUrl, setViewingUrl] = useState(null)
   const [loadingFile, setLoadingFile] = useState(false)
+  const [debugInfo, setDebugInfo] = useState('')
 
   useEffect(() => {
     validateToken()
@@ -57,18 +58,36 @@ export default function DoctorView() {
   async function validateToken() {
     setStatus('loading')
 
+    console.log('Token from URL:', token)
+    console.log('Token length:', token?.length)
+
     const { data: tokenData, error } = await supabase
       .from('qr_token')
       .select('*')
       .eq('token_hash', token)
       .single()
 
-    if (error || !tokenData) { setStatus('invalid'); return }
+    console.log('Token lookup result:', tokenData)
+    console.log('Token lookup error:', error)
+
+    setDebugInfo(JSON.stringify({ token: token?.slice(0, 20) + '...', tokenData, error }, null, 2))
+
+    if (error || !tokenData) {
+      setStatus('invalid')
+      return
+    }
 
     const now = new Date()
     const expires = new Date(tokenData.expires_at)
 
-    if (now > expires) { setStatus('expired'); return }
+    console.log('Now:', now.toISOString())
+    console.log('Expires:', expires.toISOString())
+    console.log('Is valid:', now < expires)
+
+    if (now > expires) {
+      setStatus('expired')
+      return
+    }
 
     setExpiresAt(tokenData.expires_at)
     setTimeLeft(Math.floor((expires - now) / 1000))
@@ -81,30 +100,33 @@ export default function DoctorView() {
     })
 
     // Load patient
-    const { data: patientData } = await supabase
+    const { data: patientData, error: patientError } = await supabase
       .from('patient')
       .select('*')
       .eq('patient_id', tokenData.patient_id)
       .single()
 
+    console.log('Patient:', patientData, patientError)
     setPatient(patientData)
 
     // Load records
-    const { data: recordsData } = await supabase
+    const { data: recordsData, error: recordsError } = await supabase
       .from('medical_record')
       .select('*')
       .eq('patient_id', tokenData.patient_id)
       .order('record_date', { ascending: false })
 
+    console.log('Records:', recordsData, recordsError)
     setRecords(recordsData || [])
 
     // Load medications
-    const { data: medsData } = await supabase
+    const { data: medsData, error: medsError } = await supabase
       .from('medication')
       .select('*')
       .eq('patient_id', tokenData.patient_id)
       .order('created_at', { ascending: false })
 
+    console.log('Medications:', medsData, medsError)
     setMedications(medsData || [])
     setStatus('valid')
   }
@@ -150,7 +172,6 @@ export default function DoctorView() {
   const activeMeds = medications.filter(m => m.is_active)
   const pastMeds = medications.filter(m => !m.is_active)
 
-  // Loading
   if (status === 'loading') {
     return (
       <div style={{
@@ -163,7 +184,6 @@ export default function DoctorView() {
     )
   }
 
-  // Invalid
   if (status === 'invalid') {
     return (
       <div style={{
@@ -176,14 +196,21 @@ export default function DoctorView() {
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#c62828', marginBottom: 8 }}>
           Invalid QR Code
         </h2>
-        <p style={{ fontSize: 14, color: '#888' }}>
+        <p style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>
           This link is not valid. Please ask the caregiver to generate a new QR code.
         </p>
+        {/* Debug info - remove after fixing */}
+        <pre style={{
+          fontSize: 11, color: '#aaa', textAlign: 'left',
+          background: '#f0f0f0', padding: 12, borderRadius: 8,
+          maxWidth: 400, overflow: 'auto', whiteSpace: 'pre-wrap'
+        }}>
+          {debugInfo}
+        </pre>
       </div>
     )
   }
 
-  // Expired
   if (status === 'expired') {
     return (
       <div style={{
@@ -203,7 +230,6 @@ export default function DoctorView() {
     )
   }
 
-  // File viewer
   if (viewingFile) {
     return (
       <div style={{
@@ -269,7 +295,6 @@ export default function DoctorView() {
       background: '#f5f5f5', fontFamily: 'Poppins, sans-serif'
     }}>
 
-      {/* Navbar */}
       <nav style={{
         background: '#1D7C57', padding: '0 20px',
         height: 60, display: 'flex', alignItems: 'center',
@@ -277,7 +302,7 @@ export default function DoctorView() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/fevicon.svg" alt="logo"
-            style={{ width: 36, height: 36, objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+            style={{ width: 36, height: 36, objectFit: 'contain' }} />
           <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>MEDI-CO</span>
         </div>
 
@@ -302,7 +327,6 @@ export default function DoctorView() {
 
       <div style={{ padding: 20, paddingBottom: 80 }}>
 
-        {/* Patient Info */}
         {patient && (
           <div style={{
             background: 'white', borderRadius: 16, padding: 20,
@@ -330,8 +354,7 @@ export default function DoctorView() {
               <p style={{ fontSize: 13, color: '#888' }}>
                 {patient.date_of_birth
                   ? `${new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear()} years`
-                  : ''
-                }
+                  : ''}
                 {patient.gender ? ` · ${patient.gender}` : ''}
                 {patient.blood_group ? ` · ${patient.blood_group}` : ''}
               </p>
@@ -339,7 +362,6 @@ export default function DoctorView() {
           </div>
         )}
 
-        {/* Search */}
         <input
           type="search"
           placeholder="Search records..."
@@ -354,7 +376,6 @@ export default function DoctorView() {
           }}
         />
 
-        {/* Filter Tabs */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
           {['All', 'lab_report', 'scan', 'prescription'].map(f => (
             <button
@@ -372,7 +393,6 @@ export default function DoctorView() {
           ))}
         </div>
 
-        {/* Records */}
         <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d2d2d', marginBottom: 12 }}>
           Medical Records ({filtered.length})
         </h3>
@@ -424,7 +444,6 @@ export default function DoctorView() {
           </div>
         )}
 
-        {/* Medications */}
         <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d2d2d', marginBottom: 12 }}>
           Active Medications ({activeMeds.length})
         </h3>
@@ -462,7 +481,6 @@ export default function DoctorView() {
           </div>
         )}
 
-        {/* Past Medications */}
         {pastMeds.length > 0 && (
           <>
             <div style={{
