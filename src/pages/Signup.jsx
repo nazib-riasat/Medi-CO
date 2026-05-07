@@ -5,6 +5,8 @@ import caregiver from '../assets/images/caregiver.png'
 import doctorQr from '../assets/images/doctor_qr.png'
 import elderlyUi from '../assets/images/elderly_easy_ui.png'
 
+const [success, setSuccess] = useState('')
+
 const slides = [
   {
     image: caregiver,
@@ -78,28 +80,29 @@ export default function Signup() {
     setStep(2)
   }
 
-  const handleSignup = async () => {
-    setError('')
-    if (!form.dob || !form.nid) {
-      setError('Please fill in all fields')
-      return
-    }
-    setLoading(true)
-    const { error } = await signUp({
-      fullName: form.fullName,
-      email: form.email,
-      password: form.password,
-      phone: form.phone,
-      dob: form.dob,
-      nid: form.nid
-    })
-    setLoading(false)
-    if (error) {
-      setError(error.message)
-    } else {
-      navigate('/verify-email')
-    }
+ const handleSignup = async () => {
+  setError('')
+  if (!form.dob || !form.nid) {
+    setError('Please fill in all fields')
+    return
   }
+  setLoading(true)
+  const { error } = await signUp({
+    fullName: form.fullName,
+    email: form.email,
+    password: form.password,
+    phone: form.phone,
+    dob: form.dob,
+    nid: form.nid
+  })
+  setLoading(false)
+  if (error) {
+    setError(error.message)
+  } else {
+    setSuccess('Account created! Please sign in.')
+    setTimeout(() => navigate('/'), 1500)
+  }
+}
 
   const carousel = (
     <div style={{
@@ -278,6 +281,12 @@ export default function Signup() {
                 textAlign: 'center', marginBottom: 12
               }}>{error}</p>
             )}
+            {success && (
+                <p style={{
+                  color: '#90EE90', fontSize: 13,
+                  textAlign: 'center', marginBottom: 12
+                }}>{success}</p>
+              )}
 
             <button
               onClick={handleContinue}

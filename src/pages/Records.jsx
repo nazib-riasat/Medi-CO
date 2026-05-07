@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
 const FILTERS = ['All', 'lab_report', 'scan', 'prescription']
@@ -17,7 +18,12 @@ const TYPE_ICONS = {
   'other': '📁'
 }
 
-export default function Records({ activePatient, onBack }) {
+export default function Records() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const activePatient = location.state?.patient
+  const onBack = () => navigate('/dashboard')
+
   const [records, setRecords] = useState([])
   const [filtered, setFiltered] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
@@ -106,7 +112,7 @@ export default function Records({ activePatient, onBack }) {
               <div style={{ textAlign: 'center' }}>
                 <p style={{ color: 'white', marginBottom: 8, fontSize: 15 }}>{viewingFile.title}</p>
                 <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 24 }}>Tap below to open the file</p>
-                  <a
+                <a
                   href={viewingUrl}
                   target="_blank"
                   rel="noreferrer"
@@ -211,7 +217,6 @@ export default function Records({ activePatient, onBack }) {
       <footer style={{ background: '#1D7C57', color: 'white', textAlign: 'center', padding: '12px', fontSize: 13, position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
         Developed & Maintained by @Medi-Co
       </footer>
-
     </div>
   )
 }

@@ -8,7 +8,6 @@ import UploadRecordModal from '../components/UploadRecordModal'
 import ProfileModal from '../components/ProfileModal'
 import QRModal from '../components/QRModal'
 import ChatBot from '../components/ChatBot'
-import Records from '../pages/Records'
 
 export default function Dashboard() {
   const [manager, setManager] = useState(null)
@@ -19,7 +18,6 @@ export default function Dashboard() {
   const [showAddPatient, setShowAddPatient] = useState(false)
   const [showAddMedication, setShowAddMedication] = useState(false)
   const [showUploadModal, setShowUploadModal] = useState(false)
-  const [showRecords, setShowRecords] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [openChat, setOpenChat] = useState(false)
@@ -38,6 +36,20 @@ export default function Dashboard() {
   useEffect(() => {
     if (activePatient) loadMedications()
   }, [activePatient])
+
+  // Close modals on browser back
+  useEffect(() => {
+    const handlePopState = () => {
+      setShowAddPatient(false)
+      setShowAddMedication(false)
+      setShowUploadModal(false)
+      setShowQR(false)
+      setShowProfile(false)
+      setOpenChat(false)
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   async function loadManager() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -90,6 +102,11 @@ export default function Dashboard() {
     loadMedications()
   }
 
+  function openModal(setter) {
+    window.history.pushState({ modal: true }, '')
+    setter(true)
+  }
+
   const activeMeds = medications.filter(m => m.is_active)
   const pastMeds = medications.filter(m => !m.is_active)
 
@@ -99,20 +116,10 @@ export default function Dashboard() {
     { icon: '💊', label: 'Upload Prescription' },
     { icon: '📋', label: 'View Records' },
     { icon: '📱', label: 'Doctor QR' },
-    // { icon: '🤖', label: 'AI Assistant' },
+    { icon: '🤖', label: 'AI Assistant' },
   ]
 
   const uploadTypes = ['Upload Report', 'Upload Scan', 'Upload Prescription']
-
-  if (showRecords && activePatient) {
-    return (
-      <Records
-        activePatient={activePatient}
-        manager={manager}
-        onBack={() => setShowRecords(false)}
-      />
-    )
-  }
 
   const thStyle = (w) => ({
     width: w, padding: '14px 16px', textAlign: 'left',
@@ -145,13 +152,12 @@ export default function Dashboard() {
         justifyContent: 'space-between', flexShrink: 0,
         position: 'sticky', top: 0, zIndex: 100
       }}>
-       <span style={{ color: 'white', fontWeight: 700, fontSize: 22 }}>
-  MEDI-CO
-</span>
-
+        <span style={{ color: 'white', fontWeight: 700, fontSize: 22 }}>
+          MEDI-CO
+        </span>
 
         <button
-          onClick={() => setShowProfile(true)}
+          onClick={() => openModal(setShowProfile)}
           title="Profile"
           style={{
             width: 44, height: 44, borderRadius: '50%',
@@ -204,17 +210,18 @@ export default function Dashboard() {
                     onClick={() => { setActivePatient(p); setShowPatientDropdown(false) }}
                     style={{
                       width: '100%', padding: '12px 16px',
-                      background: activePatient?.patient_id === p.patient_id
-                        ? '#f0faf5' : 'white',
+                      background: activePatient?.patient_id === p.patient_id ? '#f0faf5' : 'white',
                       border: 'none', borderBottom: '1px solid #f0f0f0',
-                      cursor: 'pointer', textAlign: 'left',
-                      fontSize: 14, color: '#333'
+                      cursor: 'pointer', textAlign: 'left', fontSize: 14, color: '#333'
                     }}>
                     {p.full_name}
                   </button>
                 ))}
                 <button
-                  onClick={() => { setShowPatientDropdown(false); setShowAddPatient(true) }}
+                  onClick={() => {
+                    setShowPatientDropdown(false)
+                    openModal(setShowAddPatient)
+                  }}
                   style={{
                     width: '100%', padding: '12px 16px',
                     background: 'white', border: 'none',
@@ -294,9 +301,14 @@ export default function Dashboard() {
                     return
                   }
                   if (!activePatient) { alert('Please select a patient first'); return }
-                  if (uploadTypes.includes(label)) { setUploadLabel(label); setShowUploadModal(true) }
-                  if (label === 'View Records') setShowRecords(true)
-                  if (label === 'Doctor QR') setShowQR(true)
+                  if (uploadTypes.includes(label)) {
+                    setUploadLabel(label)
+                    openModal(setShowUploadModal)
+                  }
+                  if (label === 'View Records') {
+                    navigate('/dashboard/records', { state: { patient: activePatient } })
+                  }
+                  if (label === 'Doctor QR') openModal(setShowQR)
                 }}
                 style={{
                   width: 120, height: 90,
@@ -331,7 +343,7 @@ export default function Dashboard() {
               Active Medications
             </h4>
             <button
-              onClick={() => setShowAddMedication(true)}
+              onClick={() => openModal(setShowAddMedication)}
               style={{
                 background: '#1D7C57', color: 'white', border: 'none',
                 borderRadius: 10, padding: '8px 16px',
