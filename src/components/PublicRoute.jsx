@@ -2,39 +2,30 @@ import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
-export default function ProtectedRoute({ children }) {
+export default function PublicRoute({ children }) {
   const [session, setSession] = useState(undefined)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => setSession(session)
-    )
-
-    return () => subscription.unsubscribe()
   }, [])
 
-  // Still checking session
   if (session === undefined) {
     return (
       <div style={{
         minHeight: '100vh', display: 'flex',
         alignItems: 'center', justifyContent: 'center',
-        background: '#f5f5f5', fontFamily: 'Poppins, sans-serif'
+        background: '#1D717C', fontFamily: 'Poppins, sans-serif'
       }}>
-        <p style={{ color: '#888', fontSize: 16 }}>Loading...</p>
+        <p style={{ color: 'white', fontSize: 16 }}>Loading...</p>
       </div>
     )
   }
 
-  // Not logged in
-  if (!session) {
-    return <Navigate to="/" replace />
+  if (session) {
+    return <Navigate to="/dashboard" replace />
   }
 
-  // Logged in
   return children
 }

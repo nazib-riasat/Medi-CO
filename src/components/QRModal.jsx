@@ -66,8 +66,8 @@ export default function QRModal({ patient, manager, onClose }) {
   }
 
   const qrUrl = token
-    ? `${window.location.origin}/doctor/${token}`
-    : ''
+  ? `${import.meta.env.VITE_APP_URL || window.location.origin}/doctor/${token}`
+  : ''
 
   const isExpired = timeLeft === 0
 

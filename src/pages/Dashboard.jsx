@@ -147,7 +147,7 @@ export default function Dashboard() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <img
-            src="/fevicon.png"
+            src="/fevicon.svg"
             alt="logo"
             style={{
               width: 48, height: 48, objectFit: 'contain',

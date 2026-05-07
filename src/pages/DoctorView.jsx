@@ -276,7 +276,7 @@ export default function DoctorView() {
         justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/fevicon.png" alt="logo"
+          <img src="/fevicon.svg" alt="logo"
             style={{ width: 36, height: 36, objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
           <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>MEDI-CO</span>
         </div>
