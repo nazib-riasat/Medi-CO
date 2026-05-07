@@ -146,31 +146,24 @@ export default function Dashboard() {
         position: 'sticky', top: 0, zIndex: 100
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <img
-            src="/fevicon.svg"
-            alt="logo"
-            style={{
-              width: 48, height: 48, objectFit: 'contain',
-              filter: 'brightness(0) invert(1)'
-            }}
-          />
+         <div style={{
+  width: 36, height: 36, borderRadius: 8,
+  background: 'white', display: 'flex',
+  alignItems: 'center', justifyContent: 'center',
+  flexShrink: 0
+}}>
+  <img
+    src="/fevicon.svg"
+    alt="logo"
+    style={{ width: 28, height: 28, objectFit: 'contain' }}
+    onError={e => { e.target.style.display = 'none' }}
+  />
+</div>
           <span style={{ color: 'white', fontWeight: 700, fontSize: 22 }}>
             MEDI-CO
           </span>
         </div>
 
-        <div style={{ flex: 1, maxWidth: 400, margin: '0 24px' }}>
-          <input
-            type="search"
-            placeholder="Search records..."
-            style={{
-              width: '100%', height: 38, borderRadius: 20,
-              padding: '0 16px', border: 'none', fontSize: 14,
-              outline: 'none', background: 'rgba(255,255,255,0.2)',
-              color: 'white', boxSizing: 'border-box'
-            }}
-          />
-        </div>
 
         <button
           onClick={() => setShowProfile(true)}

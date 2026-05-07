@@ -163,15 +163,47 @@ export default function AddPatientModal({ managerId, onClose, onSaved }) {
           </div>
 
           {/* Date of Birth */}
-          <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Date of Birth</label>
-            <input
-              type="date"
-              value={form.date_of_birth}
-              onChange={e => update('date_of_birth', e.target.value)}
-              style={inputStyle}
-            />
-          </div>
+         <div style={{ marginBottom: 14 }}>
+  <label style={labelStyle}>Date of Birth</label>
+  <div style={{ display: 'flex', gap: 8 }}>
+    <select
+      value={form.date_of_birth ? form.date_of_birth.split('-')[2] : ''}
+      onChange={e => {
+        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+        update('date_of_birth', `${parts[0]}-${parts[1]}-${e.target.value}`)
+      }}
+      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+      <option value=''>Day</option>
+      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+        <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
+      ))}
+    </select>
+    <select
+      value={form.date_of_birth ? form.date_of_birth.split('-')[1] : ''}
+      onChange={e => {
+        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+        update('date_of_birth', `${parts[0]}-${e.target.value}-${parts[2]}`)
+      }}
+      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+      <option value=''>Month</option>
+      {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
+        <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+      ))}
+    </select>
+    <select
+      value={form.date_of_birth ? form.date_of_birth.split('-')[0] : ''}
+      onChange={e => {
+        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+        update('date_of_birth', `${e.target.value}-${parts[1]}-${parts[2]}`)
+      }}
+      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+      <option value=''>Year</option>
+      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
+        <option key={y} value={y}>{y}</option>
+      ))}
+    </select>
+  </div>
+</div>
 
           {/* Phone */}
           <div style={{ marginBottom: 14 }}>
