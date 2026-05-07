@@ -116,7 +116,7 @@ export default function Dashboard() {
     { icon: '💊', label: 'Upload Prescription' },
     { icon: '📋', label: 'View Records' },
     { icon: '📱', label: 'Doctor QR' },
-    { icon: '🤖', label: 'AI Assistant' },
+    // { icon: '🤖', label: 'AI Assistant' },
   ]
 
   const uploadTypes = ['Upload Report', 'Upload Scan', 'Upload Prescription']
