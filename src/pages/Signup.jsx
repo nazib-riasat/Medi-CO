@@ -33,6 +33,18 @@ const inputStyle = {
   boxSizing: 'border-box'
 }
 
+const selectStyle = {
+  height: 48, borderRadius: 12,
+  padding: '0 8px',
+  background: 'white',
+  color: '#1D717C',
+  border: '1px solid rgba(255,255,255,0.3)',
+  fontSize: 14, outline: 'none',
+  boxSizing: 'border-box',
+  cursor: 'pointer',
+  fontWeight: 500
+}
+
 const labelStyle = {
   display: 'block', color: 'white',
   fontSize: 14, marginBottom: 8
@@ -61,6 +73,26 @@ export default function Signup() {
   const prevSlide = () => setCurrent((current - 1 + slides.length) % slides.length)
   const nextSlide = () => setCurrent((current + 1) % slides.length)
   const update = (field, value) => setForm(f => ({ ...f, [field]: value }))
+
+  const getDay = () => form.dob ? form.dob.split('-')[2] || '' : ''
+  const getMonth = () => form.dob ? form.dob.split('-')[1] || '' : ''
+  const getYear = () => form.dob ? form.dob.split('-')[0] || '' : ''
+
+  const updateDay = (val) => {
+    const y = getYear() || 'YYYY'
+    const m = getMonth() || 'MM'
+    update('dob', `${y}-${m}-${val}`)
+  }
+  const updateMonth = (val) => {
+    const y = getYear() || 'YYYY'
+    const d = getDay() || 'DD'
+    update('dob', `${y}-${val}-${d}`)
+  }
+  const updateYear = (val) => {
+    const m = getMonth() || 'MM'
+    const d = getDay() || 'DD'
+    update('dob', `${val}-${m}-${d}`)
+  }
 
   const handleContinue = () => {
     setError('')
@@ -170,7 +202,8 @@ export default function Signup() {
       width: isMobile ? '100%' : '38%',
       height: isMobile ? 'auto' : '100vh',
       flexShrink: 0, boxSizing: 'border-box',
-      overflowY: 'auto'
+      overflowY: 'auto',
+      position: 'relative', zIndex: 1
     }}>
       <div style={{ width: '100%', maxWidth: 360 }}>
 
@@ -292,42 +325,35 @@ export default function Signup() {
               Step 2 of 2 — Tell us about yourself
             </p>
 
-            {/* Date of Birth Dropdowns */}
+            {/* Date of Birth */}
             <div style={{ marginBottom: 14 }}>
               <label style={labelStyle}>Date of Birth</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <select
-                  value={form.dob ? form.dob.split('-')[2] : ''}
-                  onChange={e => {
-                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
-                    update('dob', `${parts[0]}-${parts[1]}-${e.target.value}`)
-                  }}
-                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-                  <option value=''>Day</option>
+                  value={getDay()}
+                  onChange={e => updateDay(e.target.value)}
+                  style={{ ...selectStyle, flex: 1 }}>
+                  <option value=''>DD</option>
                   {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-                    <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
+                    <option key={d} value={String(d).padStart(2, '0')}>
+                      {String(d).padStart(2, '0')}
+                    </option>
                   ))}
                 </select>
                 <select
-                  value={form.dob ? form.dob.split('-')[1] : ''}
-                  onChange={e => {
-                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
-                    update('dob', `${parts[0]}-${e.target.value}-${parts[2]}`)
-                  }}
-                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-                  <option value=''>Month</option>
+                  value={getMonth()}
+                  onChange={e => updateMonth(e.target.value)}
+                  style={{ ...selectStyle, flex: 1 }}>
+                  <option value=''>MM</option>
                   {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
                     <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
                   ))}
                 </select>
                 <select
-                  value={form.dob ? form.dob.split('-')[0] : ''}
-                  onChange={e => {
-                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
-                    update('dob', `${e.target.value}-${parts[1]}-${parts[2]}`)
-                  }}
-                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-                  <option value=''>Year</option>
+                  value={getYear()}
+                  onChange={e => updateYear(e.target.value)}
+                  style={{ ...selectStyle, flex: 2 }}>
+                  <option value=''>YYYY</option>
                   {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
                     <option key={y} value={y}>{y}</option>
                   ))}

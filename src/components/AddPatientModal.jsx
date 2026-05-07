@@ -73,12 +73,21 @@ export default function AddPatientModal({ managerId, onClose, onSaved }) {
   const inputStyle = {
     width: '100%', height: 44, borderRadius: 10,
     padding: '0 14px', border: '1px solid #ddd',
-    fontSize: 14, outline: 'none', boxSizing: 'border-box'
+    fontSize: 14, outline: 'none', boxSizing: 'border-box',
+    background: 'white', color: '#333'
   }
 
   const labelStyle = {
     display: 'block', fontSize: 13,
     fontWeight: 500, color: '#444', marginBottom: 6
+  }
+
+  const selectStyle = {
+    height: 44, borderRadius: 10,
+    border: '1px solid #ddd', fontSize: 14,
+    outline: 'none', background: 'white',
+    color: '#333', cursor: 'pointer',
+    boxSizing: 'border-box'
   }
 
   return (
@@ -163,47 +172,49 @@ export default function AddPatientModal({ managerId, onClose, onSaved }) {
           </div>
 
           {/* Date of Birth */}
-         <div style={{ marginBottom: 14 }}>
-  <label style={labelStyle}>Date of Birth</label>
-  <div style={{ display: 'flex', gap: 8 }}>
-    <select
-      value={form.date_of_birth ? form.date_of_birth.split('-')[2] : ''}
-      onChange={e => {
-        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
-        update('date_of_birth', `${parts[0]}-${parts[1]}-${e.target.value}`)
-      }}
-      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-      <option value=''>Day</option>
-      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-        <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
-      ))}
-    </select>
-    <select
-      value={form.date_of_birth ? form.date_of_birth.split('-')[1] : ''}
-      onChange={e => {
-        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
-        update('date_of_birth', `${parts[0]}-${e.target.value}-${parts[2]}`)
-      }}
-      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-      <option value=''>Month</option>
-      {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
-        <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
-      ))}
-    </select>
-    <select
-      value={form.date_of_birth ? form.date_of_birth.split('-')[0] : ''}
-      onChange={e => {
-        const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
-        update('date_of_birth', `${e.target.value}-${parts[1]}-${parts[2]}`)
-      }}
-      style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
-      <option value=''>Year</option>
-      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
-        <option key={y} value={y}>{y}</option>
-      ))}
-    </select>
-  </div>
-</div>
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Date of Birth</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select
+                value={form.date_of_birth ? form.date_of_birth.split('-')[2] : ''}
+                onChange={e => {
+                  const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+                  update('date_of_birth', `${parts[0]}-${parts[1]}-${e.target.value}`)
+                }}
+                style={{ ...selectStyle, flex: 1 }}>
+                <option value=''>DD</option>
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                  <option key={d} value={String(d).padStart(2, '0')}>
+                    {String(d).padStart(2, '0')}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={form.date_of_birth ? form.date_of_birth.split('-')[1] : ''}
+                onChange={e => {
+                  const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+                  update('date_of_birth', `${parts[0]}-${e.target.value}-${parts[2]}`)
+                }}
+                style={{ ...selectStyle, flex: 1 }}>
+                <option value=''>MM</option>
+                {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
+                  <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+                ))}
+              </select>
+              <select
+                value={form.date_of_birth ? form.date_of_birth.split('-')[0] : ''}
+                onChange={e => {
+                  const parts = form.date_of_birth ? form.date_of_birth.split('-') : ['', '', '']
+                  update('date_of_birth', `${e.target.value}-${parts[1]}-${parts[2]}`)
+                }}
+                style={{ ...selectStyle, flex: 2 }}>
+                <option value=''>YYYY</option>
+                {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           {/* Phone */}
           <div style={{ marginBottom: 14 }}>
@@ -236,7 +247,7 @@ export default function AddPatientModal({ managerId, onClose, onSaved }) {
               <select
                 value={form.gender}
                 onChange={e => update('gender', e.target.value)}
-                style={inputStyle}>
+                style={{ ...selectStyle, width: '100%' }}>
                 <option value="">Select</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -248,7 +259,7 @@ export default function AddPatientModal({ managerId, onClose, onSaved }) {
               <select
                 value={form.blood_group}
                 onChange={e => update('blood_group', e.target.value)}
-                style={inputStyle}>
+                style={{ ...selectStyle, width: '100%' }}>
                 <option value="">Select</option>
                 {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => (
                   <option key={bg} value={bg}>{bg}</option>
