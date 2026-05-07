@@ -302,14 +302,46 @@ export default function Signup() {
             }}>Step 2 of 2 — Tell us about yourself</p>
 
             <div style={{ marginBottom: 14 }}>
-              <label style={labelStyle}>Date of Birth</label>
-              <input
-                type="date"
-                value={form.dob}
-                onChange={e => update('dob', e.target.value)}
-                style={{ ...inputStyle, colorScheme: 'dark' }}
-              />
-            </div>
+  <label style={labelStyle}>Date of Birth</label>
+  <div style={{ display: 'flex', gap: 8 }}>
+    <select
+      value={form.dob ? form.dob.split('-')[2] : ''}
+      onChange={e => {
+        const parts = form.dob ? form.dob.split('-') : ['', '', '']
+        update('dob', `${parts[0]}-${parts[1]}-${e.target.value}`)
+      }}
+      style={{ ...inputStyle, flex: 1 }}>
+      <option value=''>Day</option>
+      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+        <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
+      ))}
+    </select>
+    <select
+      value={form.dob ? form.dob.split('-')[1] : ''}
+      onChange={e => {
+        const parts = form.dob ? form.dob.split('-') : ['', '', '']
+        update('dob', `${parts[0]}-${e.target.value}-${parts[2]}`)
+      }}
+      style={{ ...inputStyle, flex: 1 }}>
+      <option value=''>Month</option>
+      {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
+        <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+      ))}
+    </select>
+    <select
+      value={form.dob ? form.dob.split('-')[0] : ''}
+      onChange={e => {
+        const parts = form.dob ? form.dob.split('-') : ['', '', '']
+        update('dob', `${e.target.value}-${parts[1]}-${parts[2]}`)
+      }}
+      style={{ ...inputStyle, flex: 1 }}>
+      <option value=''>Year</option>
+      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
+        <option key={y} value={y}>{y}</option>
+      ))}
+    </select>
+  </div>
+</div>
 
             <div style={{ marginBottom: 24 }}>
               <label style={labelStyle}>NID Number</label>
