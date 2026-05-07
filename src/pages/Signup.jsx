@@ -5,8 +5,6 @@ import caregiver from '../assets/images/caregiver.png'
 import doctorQr from '../assets/images/doctor_qr.png'
 import elderlyUi from '../assets/images/elderly_easy_ui.png'
 
-const [success, setSuccess] = useState('')
-
 const slides = [
   {
     image: caregiver,
@@ -44,6 +42,7 @@ export default function Signup() {
   const [current, setCurrent] = useState(0)
   const [step, setStep] = useState(1)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900)
   const navigate = useNavigate()
@@ -80,29 +79,29 @@ export default function Signup() {
     setStep(2)
   }
 
- const handleSignup = async () => {
-  setError('')
-  if (!form.dob || !form.nid) {
-    setError('Please fill in all fields')
-    return
+  const handleSignup = async () => {
+    setError('')
+    if (!form.dob || !form.nid) {
+      setError('Please fill in all fields')
+      return
+    }
+    setLoading(true)
+    const { error } = await signUp({
+      fullName: form.fullName,
+      email: form.email,
+      password: form.password,
+      phone: form.phone,
+      dob: form.dob,
+      nid: form.nid
+    })
+    setLoading(false)
+    if (error) {
+      setError(error.message)
+    } else {
+      setSuccess('Account created! Redirecting to sign in...')
+      setTimeout(() => navigate('/'), 1500)
+    }
   }
-  setLoading(true)
-  const { error } = await signUp({
-    fullName: form.fullName,
-    email: form.email,
-    password: form.password,
-    phone: form.phone,
-    dob: form.dob,
-    nid: form.nid
-  })
-  setLoading(false)
-  if (error) {
-    setError(error.message)
-  } else {
-    setSuccess('Account created! Please sign in.')
-    setTimeout(() => navigate('/'), 1500)
-  }
-}
 
   const carousel = (
     <div style={{
@@ -175,21 +174,16 @@ export default function Signup() {
     }}>
       <div style={{ width: '100%', maxWidth: 360 }}>
 
-        <h1 style={{
-          fontSize: 32, fontWeight: 700,
-          color: 'white', marginBottom: 16
-        }}>MEDI-CO</h1>
+        <h1 style={{ fontSize: 32, fontWeight: 700, color: 'white', marginBottom: 16 }}>
+          MEDI-CO
+        </h1>
 
         {/* Step indicator */}
-        <div style={{
-          display: 'flex', alignItems: 'center',
-          gap: 8, marginBottom: 24
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
           <div style={{
             width: 28, height: 28, borderRadius: '50%',
             background: 'white', color: '#1D717C',
-            display: 'flex', alignItems: 'center',
-            justifyContent: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontWeight: 700, fontSize: 13, flexShrink: 0
           }}>1</div>
           <div style={{
@@ -201,8 +195,7 @@ export default function Signup() {
             width: 28, height: 28, borderRadius: '50%',
             background: step === 2 ? 'white' : 'rgba(255,255,255,0.3)',
             color: step === 2 ? '#1D717C' : 'white',
-            display: 'flex', alignItems: 'center',
-            justifyContent: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontWeight: 700, fontSize: 13, flexShrink: 0,
             transition: 'all 0.3s'
           }}>2</div>
@@ -210,14 +203,12 @@ export default function Signup() {
 
         {step === 1 ? (
           <>
-            <h2 style={{
-              fontSize: 22, fontWeight: 600,
-              color: 'white', marginBottom: 6
-            }}>Account Details</h2>
-            <p style={{
-              color: 'white', fontSize: 13,
-              opacity: 0.8, marginBottom: 24
-            }}>Step 1 of 2 — Create your login credentials</p>
+            <h2 style={{ fontSize: 22, fontWeight: 600, color: 'white', marginBottom: 6 }}>
+              Account Details
+            </h2>
+            <p style={{ color: 'white', fontSize: 13, opacity: 0.8, marginBottom: 24 }}>
+              Step 1 of 2 — Create your login credentials
+            </p>
 
             <div style={{ marginBottom: 14 }}>
               <label style={labelStyle}>Full Name</label>
@@ -276,17 +267,10 @@ export default function Signup() {
             </div>
 
             {error && (
-              <p style={{
-                color: '#ffcccc', fontSize: 13,
-                textAlign: 'center', marginBottom: 12
-              }}>{error}</p>
+              <p style={{ color: '#ffcccc', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
+                {error}
+              </p>
             )}
-            {success && (
-                <p style={{
-                  color: '#90EE90', fontSize: 13,
-                  textAlign: 'center', marginBottom: 12
-                }}>{success}</p>
-              )}
 
             <button
               onClick={handleContinue}
@@ -301,56 +285,55 @@ export default function Signup() {
           </>
         ) : (
           <>
-            <h2 style={{
-              fontSize: 22, fontWeight: 600,
-              color: 'white', marginBottom: 6
-            }}>Personal Details</h2>
-            <p style={{
-              color: 'white', fontSize: 13,
-              opacity: 0.8, marginBottom: 24
-            }}>Step 2 of 2 — Tell us about yourself</p>
+            <h2 style={{ fontSize: 22, fontWeight: 600, color: 'white', marginBottom: 6 }}>
+              Personal Details
+            </h2>
+            <p style={{ color: 'white', fontSize: 13, opacity: 0.8, marginBottom: 24 }}>
+              Step 2 of 2 — Tell us about yourself
+            </p>
 
+            {/* Date of Birth Dropdowns */}
             <div style={{ marginBottom: 14 }}>
-  <label style={labelStyle}>Date of Birth</label>
-  <div style={{ display: 'flex', gap: 8 }}>
-    <select
-      value={form.dob ? form.dob.split('-')[2] : ''}
-      onChange={e => {
-        const parts = form.dob ? form.dob.split('-') : ['', '', '']
-        update('dob', `${parts[0]}-${parts[1]}-${e.target.value}`)
-      }}
-      style={{ ...inputStyle, flex: 1 }}>
-      <option value=''>Day</option>
-      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-        <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
-      ))}
-    </select>
-    <select
-      value={form.dob ? form.dob.split('-')[1] : ''}
-      onChange={e => {
-        const parts = form.dob ? form.dob.split('-') : ['', '', '']
-        update('dob', `${parts[0]}-${e.target.value}-${parts[2]}`)
-      }}
-      style={{ ...inputStyle, flex: 1 }}>
-      <option value=''>Month</option>
-      {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
-        <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
-      ))}
-    </select>
-    <select
-      value={form.dob ? form.dob.split('-')[0] : ''}
-      onChange={e => {
-        const parts = form.dob ? form.dob.split('-') : ['', '', '']
-        update('dob', `${e.target.value}-${parts[1]}-${parts[2]}`)
-      }}
-      style={{ ...inputStyle, flex: 1 }}>
-      <option value=''>Year</option>
-      {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
-        <option key={y} value={y}>{y}</option>
-      ))}
-    </select>
-  </div>
-</div>
+              <label style={labelStyle}>Date of Birth</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <select
+                  value={form.dob ? form.dob.split('-')[2] : ''}
+                  onChange={e => {
+                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
+                    update('dob', `${parts[0]}-${parts[1]}-${e.target.value}`)
+                  }}
+                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+                  <option value=''>Day</option>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                    <option key={d} value={String(d).padStart(2, '0')}>{d}</option>
+                  ))}
+                </select>
+                <select
+                  value={form.dob ? form.dob.split('-')[1] : ''}
+                  onChange={e => {
+                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
+                    update('dob', `${parts[0]}-${e.target.value}-${parts[2]}`)
+                  }}
+                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+                  <option value=''>Month</option>
+                  {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m, i) => (
+                    <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+                  ))}
+                </select>
+                <select
+                  value={form.dob ? form.dob.split('-')[0] : ''}
+                  onChange={e => {
+                    const parts = form.dob ? form.dob.split('-') : ['', '', '']
+                    update('dob', `${e.target.value}-${parts[1]}-${parts[2]}`)
+                  }}
+                  style={{ ...inputStyle, flex: 1, padding: '0 8px' }}>
+                  <option value=''>Year</option>
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             <div style={{ marginBottom: 24 }}>
               <label style={labelStyle}>NID Number</label>
@@ -364,10 +347,15 @@ export default function Signup() {
             </div>
 
             {error && (
-              <p style={{
-                color: '#ffcccc', fontSize: 13,
-                textAlign: 'center', marginBottom: 12
-              }}>{error}</p>
+              <p style={{ color: '#ffcccc', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
+                {error}
+              </p>
+            )}
+
+            {success && (
+              <p style={{ color: '#90EE90', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
+                {success}
+              </p>
             )}
 
             <div style={{ display: 'flex', gap: 12 }}>
@@ -400,10 +388,7 @@ export default function Signup() {
           </>
         )}
 
-        <p style={{
-          color: 'white', fontSize: 14,
-          textAlign: 'center', marginTop: 20
-        }}>
+        <p style={{ color: 'white', fontSize: 14, textAlign: 'center', marginTop: 20 }}>
           Already have an account?{' '}
           <Link to="/" style={{ color: 'white', fontWeight: 600 }}>
             Sign in
