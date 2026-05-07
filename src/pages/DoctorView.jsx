@@ -208,10 +208,7 @@ export default function DoctorView() {
     <div style={{ minHeight: '100vh', width: '100vw', background: '#f5f5f5', fontFamily: 'Poppins, sans-serif' }}>
 
       <nav style={{ background: '#1D7C57', padding: '0 20px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/fevicon.svg" alt="logo" style={{ width: 36, height: 36, objectFit: 'contain' }} />
-          <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>MEDI-CO</span>
-        </div>
+        <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>MEDI-CO</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: timeLeft < 300 ? '#fdecea' : 'rgba(255,255,255,0.15)', padding: '6px 14px', borderRadius: 20 }}>
           <span style={{ fontSize: 14 }}>⏱</span>
           <span style={{ fontSize: 15, fontWeight: 700, color: timeLeft < 300 ? '#c62828' : 'white' }}>{formatTime(timeLeft)}</span>

@@ -145,24 +145,9 @@ export default function Dashboard() {
         justifyContent: 'space-between', flexShrink: 0,
         position: 'sticky', top: 0, zIndex: 100
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-         <div style={{
-  width: 36, height: 36, borderRadius: 8,
-  background: 'white', display: 'flex',
-  alignItems: 'center', justifyContent: 'center',
-  flexShrink: 0
-}}>
-  <img
-    src="/fevicon.svg"
-    alt="logo"
-    style={{ width: 28, height: 28, objectFit: 'contain' }}
-    onError={e => { e.target.style.display = 'none' }}
-  />
-</div>
-          <span style={{ color: 'white', fontWeight: 700, fontSize: 22 }}>
-            MEDI-CO
-          </span>
-        </div>
+       <span style={{ color: 'white', fontWeight: 700, fontSize: 22 }}>
+  MEDI-CO
+</span>
 
 
         <button
