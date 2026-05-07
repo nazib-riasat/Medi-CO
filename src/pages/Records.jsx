@@ -27,19 +27,13 @@ export default function Records({ activePatient, onBack }) {
   const [viewingUrl, setViewingUrl] = useState(null)
   const [loadingFile, setLoadingFile] = useState(false)
 
-  useEffect(() => {
-    if (activePatient) loadRecords()
-  }, [activePatient])
-
-  useEffect(() => {
-    applyFilter()
-  }, [records, activeFilter, search])
+  useEffect(() => { if (activePatient) loadRecords() }, [activePatient])
+  useEffect(() => { applyFilter() }, [records, activeFilter, search])
 
   async function loadRecords() {
     setLoading(true)
     const { data } = await supabase
-      .from('medical_record')
-      .select('*')
+      .from('medical_record').select('*')
       .eq('patient_id', activePatient.patient_id)
       .order('record_date', { ascending: false })
     setRecords(data || [])
@@ -84,61 +78,42 @@ export default function Records({ activePatient, onBack }) {
     loadRecords()
   }
 
-  // File Viewer
   if (viewingFile) {
     return (
-      <div style={{
-        display: 'flex', flexDirection: 'column',
-        minHeight: '100vh', width: '100vw',
-        background: '#111', fontFamily: 'Poppins, sans-serif'
-      }}>
-        <div style={{
-          background: '#1D7C57', padding: '0 24px',
-          height: 60, display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', flexShrink: 0
-        }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: '#111', fontFamily: 'Poppins, sans-serif' }}>
+        <div style={{ background: '#1D7C57', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <button
             onClick={() => { setViewingFile(null); setViewingUrl(null) }}
-            style={{
-              background: 'rgba(255,255,255,0.2)', border: 'none',
-              color: 'white', padding: '8px 16px', borderRadius: 8,
-              cursor: 'pointer', fontSize: 14, fontWeight: 500
-            }}>
+            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
             Back
           </button>
-          <span style={{ color: 'white', fontWeight: 600, fontSize: 15 }}>
-            {viewingFile.title}
-          </span>
+          <span style={{ color: 'white', fontWeight: 600, fontSize: 15 }}>{viewingFile.title}</span>
           <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>
             {FILTER_LABELS[viewingFile.record_type] || viewingFile.record_type}
           </span>
         </div>
-
-        <div style={{
-          flex: 1, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', padding: 24
-        }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           {loadingFile ? (
             <p style={{ color: 'white', fontSize: 16 }}>Loading file...</p>
           ) : viewingUrl ? (
-            viewingFile.file_type?.includes('image') ? (
+            viewingFile.file_type && viewingFile.file_type.includes('image') ? (
               <img
                 src={viewingUrl}
                 alt={viewingFile.title}
-                style={{
-                  maxWidth: '100%', maxHeight: '80vh',
-                  objectFit: 'contain', borderRadius: 12
-                }}
+                style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: 12 }}
               />
             ) : (
-              <iframe
-                src={viewingUrl}
-                title={viewingFile.title}
-                style={{
-                  width: '100%', height: '80vh',
-                  border: 'none', borderRadius: 12, background: 'white'
-                }}
-              />
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ color: 'white', marginBottom: 8, fontSize: 15 }}>{viewingFile.title}</p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 24 }}>Tap below to open the file</p>
+                  <a
+                  href={viewingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ padding: '14px 28px', background: '#1D7C57', color: 'white', borderRadius: 12, textDecoration: 'none', fontWeight: 600, fontSize: 15, display: 'inline-block' }}>
+                  Open File
+                </a>
+              </div>
             )
           ) : (
             <p style={{ color: 'white' }}>Could not load file.</p>
@@ -149,32 +124,16 @@ export default function Records({ activePatient, onBack }) {
   }
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column',
-      minHeight: '100vh', width: '100vw',
-      background: '#f5f5f5', fontFamily: 'Poppins, sans-serif'
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: '#f5f5f5', fontFamily: 'Poppins, sans-serif' }}>
 
-      {/* Navbar */}
-      <nav style={{
-        background: '#1D7C57', padding: '0 24px',
-        height: 60, display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', flexShrink: 0,
-        position: 'sticky', top: 0, zIndex: 100
-      }}>
+      <nav style={{ background: '#1D7C57', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={onBack}
-            style={{
-              background: 'rgba(255,255,255,0.2)', border: 'none',
-              color: 'white', padding: '8px 16px', borderRadius: 8,
-              cursor: 'pointer', fontSize: 14, fontWeight: 500
-            }}>
+            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500 }}>
             Back
           </button>
-          <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>
-            Records — {activePatient?.full_name}
-          </span>
+          <span style={{ color: 'white', fontWeight: 700, fontSize: 18 }}>Records — {activePatient?.full_name}</span>
         </div>
         <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>
           {filtered.length} record{filtered.length !== 1 ? 's' : ''}
@@ -183,46 +142,29 @@ export default function Records({ activePatient, onBack }) {
 
       <div style={{ padding: 20, paddingBottom: 80 }}>
 
-        {/* Search */}
         <div style={{ marginBottom: 14 }}>
           <input
             type="search"
             placeholder="Search by file name or notes..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              width: '100%', height: 42, borderRadius: 12,
-              padding: '0 18px', border: '1px solid #ddd',
-              fontSize: 14, outline: 'none',
-              boxSizing: 'border-box', background: 'white'
-            }}
+            style={{ width: '100%', height: 42, borderRadius: 12, padding: '0 18px', border: '1px solid #ddd', fontSize: 14, outline: 'none', boxSizing: 'border-box', background: 'white' }}
           />
         </div>
 
-        {/* Filter Tabs */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
           {FILTERS.map(f => (
             <button
               key={f}
               onClick={() => setActiveFilter(f)}
-              style={{
-                padding: '6px 14px', borderRadius: 20,
-                border: activeFilter === f
-                  ? '2px solid #1D7C57' : '2px solid #e0e0e0',
-                background: activeFilter === f ? '#1D7C57' : 'white',
-                color: activeFilter === f ? 'white' : '#555',
-                fontSize: 13, fontWeight: 500, cursor: 'pointer'
-              }}>
+              style={{ padding: '6px 14px', borderRadius: 20, border: activeFilter === f ? '2px solid #1D7C57' : '2px solid #e0e0e0', background: activeFilter === f ? '#1D7C57' : 'white', color: activeFilter === f ? 'white' : '#555', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
               {FILTER_LABELS[f]}
             </button>
           ))}
         </div>
 
-        {/* Records List */}
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#888', padding: 48 }}>
-            Loading records...
-          </p>
+          <p style={{ textAlign: 'center', color: '#888', padding: 48 }}>Loading records...</p>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 64, color: '#888' }}>
             <p style={{ fontSize: 40, marginBottom: 10 }}>📂</p>
@@ -237,65 +179,26 @@ export default function Records({ activePatient, onBack }) {
               <div
                 key={record.record_id}
                 onClick={() => openFile(record)}
-                style={{
-                  background: 'white', borderRadius: 12,
-                  padding: '12px 16px',
-                  border: '1px solid #e8e8e8',
-                  display: 'flex', alignItems: 'center',
-                  gap: 12, cursor: 'pointer',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                  transition: 'box-shadow 0.2s'
-                }}
-                onMouseEnter={e =>
-                  e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.08)'
-                }
-                onMouseLeave={e =>
-                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'
-                }>
-
-                {/* Icon */}
-                <div style={{
-                  width: 40, height: 40, borderRadius: 10,
-                  background: '#f0faf5', flexShrink: 0,
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: 20
-                }}>
+                style={{ background: 'white', borderRadius: 12, padding: '12px 16px', border: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f0faf5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                   {TYPE_ICONS[record.record_type] || '📁'}
                 </div>
-
-                {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontSize: 14, fontWeight: 600, color: '#2d2d2d',
-                    marginBottom: 2, overflow: 'hidden',
-                    textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                  }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#2d2d2d', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {record.title}
                   </p>
                   <p style={{ fontSize: 12, color: '#888' }}>
-                    {FILTER_LABELS[record.record_type]} &nbsp;·&nbsp;
-                    {record.record_date
-                      ? new Date(record.record_date).toLocaleDateString('en-GB')
-                      : 'No date'}
+                    {FILTER_LABELS[record.record_type]} · {record.record_date ? new Date(record.record_date).toLocaleDateString('en-GB') : 'No date'}
                     {record.notes && ` · ${record.notes}`}
                   </p>
                 </div>
-
-                {/* Right */}
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <p style={{ fontSize: 11, color: '#bbb', marginBottom: 4 }}>
-                    {record.file_size_bytes
-                      ? `${(record.file_size_bytes / 1024).toFixed(0)} KB`
-                      : ''}
+                    {record.file_size_bytes ? `${(record.file_size_bytes / 1024).toFixed(0)} KB` : ''}
                   </p>
                   <button
                     onClick={e => { e.stopPropagation(); deleteRecord(record) }}
-                    style={{
-                      padding: '3px 8px', fontSize: 11,
-                      background: '#fdecea', color: '#c62828',
-                      border: '1px solid #c62828', borderRadius: 6,
-                      cursor: 'pointer', fontWeight: 500
-                    }}>
+                    style={{ padding: '3px 8px', fontSize: 11, background: '#fdecea', color: '#c62828', border: '1px solid #c62828', borderRadius: 6, cursor: 'pointer', fontWeight: 500 }}>
                     Delete
                   </button>
                 </div>
@@ -305,13 +208,10 @@ export default function Records({ activePatient, onBack }) {
         )}
       </div>
 
-      <footer style={{
-        background: '#1D7C57', color: 'white', textAlign: 'center',
-        padding: '12px', fontSize: 13, position: 'fixed',
-        bottom: 0, left: 0, width: '100%', zIndex: 100
-      }}>
+      <footer style={{ background: '#1D7C57', color: 'white', textAlign: 'center', padding: '12px', fontSize: 13, position: 'fixed', bottom: 0, left: 0, width: '100%', zIndex: 100 }}>
         Developed & Maintained by @Medi-Co
       </footer>
+
     </div>
   )
 }

@@ -38,18 +38,25 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
       position: 'fixed', inset: 0,
       background: 'rgba(0,0,0,0.5)',
       display: 'flex', alignItems: 'center',
-      justifyContent: 'center', zIndex: 200, padding: 16
+      justifyContent: 'center', zIndex: 200, padding: 16,
+      overflowY: 'auto'
     }}>
       <div style={{
         background: 'white', borderRadius: 20,
         width: '100%', maxWidth: 460,
-        overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+        maxHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
       }}>
+
+        {/* Header */}
         <div style={{
           background: '#1D7C57', padding: '18px 24px',
           display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          flexShrink: 0
         }}>
           <h3 style={{ color: 'white', fontWeight: 600, fontSize: 18 }}>
             Add Medication
@@ -60,7 +67,8 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
           }}>X</button>
         </div>
 
-        <div style={{ padding: 24 }}>
+        {/* Scrollable Content */}
+        <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
 
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#444', marginBottom: 6 }}>
@@ -75,6 +83,7 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
             />
           </div>
 
+          {/* Dose + Unit */}
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#444', marginBottom: 6 }}>
               Dose
@@ -98,6 +107,7 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
             </div>
           </div>
 
+          {/* Timing */}
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#444', marginBottom: 6 }}>
               Timing
@@ -131,6 +141,7 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
             </div>
           </div>
 
+          {/* Food timing */}
           <div style={{ marginBottom: 14 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#444', marginBottom: 8 }}>
               Food Timing
@@ -157,6 +168,7 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
             </div>
           </div>
 
+          {/* Notes */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#444', marginBottom: 6 }}>
               Notes (optional)
@@ -188,6 +200,7 @@ export default function AddMedicationModal({ patientId, onClose, onSaved }) {
               opacity: loading ? 0.8 : 1
             }}>{loading ? 'Saving...' : 'Save Medication'}</button>
           </div>
+
         </div>
       </div>
     </div>
